@@ -2,3 +2,9 @@
 *pycache*
 saved_info/*
 saved_info
+
+.DS_Store
+.vscode/
+.venv/
+.python-version
+test/

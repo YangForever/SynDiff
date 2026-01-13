@@ -183,7 +183,7 @@ class Discriminator_large(nn.Module):
             act=act,
         )
       
-    self.start_conv = conv2d(nc,ngf*2,1, padding=0)
+    self.start_conv = conv2d(nc, ngf*2, 1, padding=0)
     self.conv1 = DownConvBlock(ngf*2, ngf*4, t_emb_dim = t_emb_dim, downsample = True, act=act)
     
     self.conv2 = DownConvBlock(ngf*4, ngf*8,  t_emb_dim = t_emb_dim, downsample=True,act=act)

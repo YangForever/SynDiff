@@ -842,6 +842,7 @@ if __name__ == '__main__':
     args.world_size = args.num_proc_node * args.num_process_per_node
     size = args.num_process_per_node
 
+    # size: number of gpus
     if size > 1:
         processes = []
         for rank in range(size):
@@ -857,5 +858,4 @@ if __name__ == '__main__':
         for p in processes:
             p.join()
     else:
-        
         init_processes(0, size, train_syndiff, args)

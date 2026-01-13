@@ -15,7 +15,6 @@ def CreateDatasetSynthesis(phase, input_path, contrast1 = 'T1', contrast2 = 'T2'
     return dataset 
 
 
-
 #Dataset loading from load_dir and converintg to 256x256 
 def LoadDataSet(load_dir, variable = 'data_fs', padding = True, Norm = True):
     f = h5py.File(load_dir,'r') 
