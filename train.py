@@ -611,20 +611,20 @@ def train_syndiff(rank, gpu, args):
                 torchvision.utils.save_image(x1_pos_sample, os.path.join(exp_path, 'xpos1_epoch_{}.png'.format(epoch)), normalize=True)
                 torchvision.utils.save_image(x2_pos_sample, os.path.join(exp_path, 'xpos2_epoch_{}.png'.format(epoch)), normalize=True)
             #concatenate noise and source contrast
-            x1_t = torch.cat((torch.randn_like(real_data1),real_data2),axis=1)
+            x1_t = torch.cat((torch.randn_like(real_data1),real_data2), axis=1)
             fake_sample1 = sample_from_model(pos_coeff, gen_diffusive_1, args.num_timesteps, x1_t, T, args)
             fake_sample1 = torch.cat((real_data2, fake_sample1),axis=-1)
             torchvision.utils.save_image(fake_sample1, os.path.join(exp_path, 'sample1_discrete_epoch_{}.png'.format(epoch)), normalize=True)
             pred1 = gen_non_diffusive_2to1(real_data2)
             #
-            x2_t = torch.cat((torch.randn_like(real_data2), pred1),axis=1)
+            x2_t = torch.cat((torch.randn_like(real_data2), pred1), axis=1)
             fake_sample2_tilda = gen_diffusive_2(x2_t , t2, latent_z2)   
             #
             pred1 = torch.cat((real_data2, pred1, gen_non_diffusive_1to2(pred1), fake_sample2_tilda[:,[0],:]),axis=-1)
             torchvision.utils.save_image(pred1, os.path.join(exp_path, 'sample1_translated_epoch_{}.png'.format(epoch)), normalize=True)
 
 
-            x2_t = torch.cat((torch.randn_like(real_data2),real_data1),axis=1)
+            x2_t = torch.cat((torch.randn_like(real_data2),real_data1), axis=1)
             fake_sample2 = sample_from_model(pos_coeff, gen_diffusive_2, args.num_timesteps, x2_t, T, args)
             fake_sample2 = torch.cat((real_data1, fake_sample2),axis=-1)
             torchvision.utils.save_image(fake_sample2, os.path.join(exp_path, 'sample2_discrete_epoch_{}.png'.format(epoch)), normalize=True)
@@ -730,59 +730,35 @@ def cleanup():
 #%%
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('syndiff parameters')
-    parser.add_argument('--seed', type=int, default=1024,
-                        help='seed used for initialization')
-    
+
+    parser.add_argument('--seed', type=int, default=0, help='seed used for initialization')
     parser.add_argument('--resume', action='store_true',default=False)
-    
-    parser.add_argument('--image_size', type=int, default=32,
-                            help='size of image')
-    parser.add_argument('--num_channels', type=int, default=3,
-                            help='channel of image')
-    parser.add_argument('--centered', action='store_false', default=True,
-                            help='-1,1 scale')
+    parser.add_argument('--image_size', type=int, default=256, help='size of image')
+    parser.add_argument('--num_channels', type=int, default=3, help='channel of image')
+    parser.add_argument('--centered', action='store_false', default=True, help='-1,1 scale')
     parser.add_argument('--use_geometric', action='store_true',default=False)
-    parser.add_argument('--beta_min', type=float, default= 0.1,
-                            help='beta_min for diffusion')
-    parser.add_argument('--beta_max', type=float, default=20.,
-                            help='beta_max for diffusion')
+    parser.add_argument('--beta_min', type=float, default= 0.1, help='beta_min for diffusion')
+    parser.add_argument('--beta_max', type=float, default=20., help='beta_max for diffusion')
     
     
-    parser.add_argument('--num_channels_dae', type=int, default=128,
-                            help='number of initial channels in denosing model')
-    parser.add_argument('--n_mlp', type=int, default=3,
-                            help='number of mlp layers for z')
-    parser.add_argument('--ch_mult', nargs='+', type=int,
-                            help='channel multiplier')
-    parser.add_argument('--num_res_blocks', type=int, default=2,
-                            help='number of resnet blocks per scale')
-    parser.add_argument('--attn_resolutions', default=(16,),
-                            help='resolution of applying attention')
-    parser.add_argument('--dropout', type=float, default=0.,
-                            help='drop-out rate')
-    parser.add_argument('--resamp_with_conv', action='store_false', default=True,
-                            help='always up/down sampling with conv')
-    parser.add_argument('--conditional', action='store_false', default=True,
-                            help='noise conditional')
-    parser.add_argument('--fir', action='store_false', default=True,
-                            help='FIR')
-    parser.add_argument('--fir_kernel', default=[1, 3, 3, 1],
-                            help='FIR kernel')
-    parser.add_argument('--skip_rescale', action='store_false', default=True,
-                            help='skip rescale')
-    parser.add_argument('--resblock_type', default='biggan',
-                            help='tyle of resnet block, choice in biggan and ddpm')
-    parser.add_argument('--progressive', type=str, default='none', choices=['none', 'output_skip', 'residual'],
-                            help='progressive type for output')
-    parser.add_argument('--progressive_input', type=str, default='residual', choices=['none', 'input_skip', 'residual'],
-                        help='progressive type for input')
-    parser.add_argument('--progressive_combine', type=str, default='sum', choices=['sum', 'cat'],
-                        help='progressive combine method.')
+    parser.add_argument('--num_channels_dae', type=int, default=128, help='number of initial channels in denosing model')
+    parser.add_argument('--n_mlp', type=int, default=3, help='number of mlp layers for z')
+    parser.add_argument('--ch_mult', nargs='+', type=int, help='channel multiplier')
+    parser.add_argument('--num_res_blocks', type=int, default=2, help='number of resnet blocks per scale')
+    parser.add_argument('--attn_resolutions', default=(16,), help='resolution of applying attention')
+    parser.add_argument('--dropout', type=float, default=0., help='drop-out rate')
+    parser.add_argument('--resamp_with_conv', action='store_false', default=True, help='always up/down sampling with conv')
+    parser.add_argument('--conditional', action='store_false', default=True, help='noise conditional')
+    parser.add_argument('--fir', action='store_false', default=True, help='FIR')
+    parser.add_argument('--fir_kernel', default=[1, 3, 3, 1], help='FIR kernel')
+    parser.add_argument('--skip_rescale', action='store_false', default=True, help='skip rescale')
+    parser.add_argument('--resblock_type', default='biggan', help='tyle of resnet block, choice in biggan and ddpm')
+    parser.add_argument('--progressive', type=str, default='none', choices=['none', 'output_skip', 'residual'], help='progressive type for output')
+    parser.add_argument('--progressive_input', type=str, default='residual', choices=['none', 'input_skip', 'residual'], help='progressive type for input')
+    parser.add_argument('--progressive_combine', type=str, default='sum', choices=['sum', 'cat'], help='progressive combine method.')
     
-    parser.add_argument('--embedding_type', type=str, default='positional', choices=['positional', 'fourier'],
-                        help='type of time embedding')
-    parser.add_argument('--fourier_scale', type=float, default=16.,
-                            help='scale of fourier transform')
+    parser.add_argument('--embedding_type', type=str, default='positional', choices=['positional', 'fourier'], help='type of time embedding')
+    parser.add_argument('--fourier_scale', type=float, default=16., help='scale of fourier transform')
     parser.add_argument('--not_use_tanh', action='store_true',default=False)
     
     #geenrator and training
@@ -800,19 +776,15 @@ if __name__ == '__main__':
 
     parser.add_argument('--lr_g', type=float, default=1.5e-4, help='learning rate g')
     parser.add_argument('--lr_d', type=float, default=1e-4, help='learning rate d')
-    parser.add_argument('--beta1', type=float, default=0.5,
-                            help='beta1 for adam')
-    parser.add_argument('--beta2', type=float, default=0.9,
-                            help='beta2 for adam')
+    parser.add_argument('--beta1', type=float, default=0.5, help='beta1 for adam')
+    parser.add_argument('--beta2', type=float, default=0.9, help='beta2 for adam')
     parser.add_argument('--no_lr_decay',action='store_true', default=False)
     
-    parser.add_argument('--use_ema', action='store_true', default=False,
-                            help='use EMA or not')
+    parser.add_argument('--use_ema', action='store_true', default=False, help='use EMA or not')
     parser.add_argument('--ema_decay', type=float, default=0.9999, help='decay rate for EMA')
     
     parser.add_argument('--r1_gamma', type=float, default=0.05, help='coef for r1 reg')
-    parser.add_argument('--lazy_reg', type=int, default=None,
-                        help='lazy regulariation.')
+    parser.add_argument('--lazy_reg', type=int, default=None, help='lazy regulariation.')
 
     parser.add_argument('--save_content', action='store_true',default=False)
     parser.add_argument('--save_content_every', type=int, default=10, help='save content for resuming every x epochs')
@@ -820,22 +792,14 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_l1_loss', type=float, default=0.5, help='weightening of l1 loss part of diffusion ans cycle models')
    
     ###ddp
-    parser.add_argument('--num_proc_node', type=int, default=1,
-                        help='The number of nodes in multi node env.')
-    parser.add_argument('--num_process_per_node', type=int, default=1,
-                        help='number of gpus')
-    parser.add_argument('--node_rank', type=int, default=0,
-                        help='The index of node.')
-    parser.add_argument('--local_rank', type=int, default=0,
-                        help='rank of process in the node')
-    parser.add_argument('--master_address', type=str, default='127.0.0.1',
-                        help='address for master')
-    parser.add_argument('--contrast1', type=str, default='T1',
-                        help='contrast selection for model')
-    parser.add_argument('--contrast2', type=str, default='T2',
-                        help='contrast selection for model')
-    parser.add_argument('--port_num', type=str, default='6021',
-                        help='port selection for code')
+    parser.add_argument('--num_proc_node', type=int, default=1, help='The number of nodes in multi node env.')
+    parser.add_argument('--num_process_per_node', type=int, default=1, help='number of gpus')
+    parser.add_argument('--node_rank', type=int, default=0, help='The index of node.')
+    parser.add_argument('--local_rank', type=int, default=0, help='rank of process in the node')
+    parser.add_argument('--master_address', type=str, default='127.0.0.1', help='address for master')
+    parser.add_argument('--contrast1', type=str, default='T1', help='contrast selection for model')
+    parser.add_argument('--contrast2', type=str, default='T2', help='contrast selection for model')
+    parser.add_argument('--port_num', type=str, default='6021', help='port selection for code')
 
    
     args = parser.parse_args()
